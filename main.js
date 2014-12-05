@@ -1,21 +1,9 @@
 /** @jsx React.DOM */
 
-var levels = [
-  {
-    word: "Play",
-    video: {
-      url: "http://media.spreadthesign.com/video/mp4/13/49199.mp4",
-      attributions: "Spreadthesign.com"
-    },
-    words: ["Eat", "Play", "Jump"]
-  }
-];
-
-
 var VideoPlayer = React.createClass({
   render: function() {
     return <div className="player col">
-      <video src={this.props.video.url} autoPlay controls="true"></video>
+      <video src={this.props.video.url} autoPlay controls></video>
       <div className="attributions">&copy; {this.props.video.attributions}</div>
     </div>;
   }
