@@ -1,0 +1,35 @@
+@media (min-width: 30em) {
+    .row { width: 100%; display: table; table-layout: fixed; }
+    .col { display: table-cell; }
+}
+
+body {
+    background-color: black;
+    color: white;
+    font-size: 3em;
+}
+
+.content {
+    border-top: 1px solid white;
+    padding: 0.2em;
+}
+
+.player > video {
+    width: 90%;
+}
+
+.words {
+    padding-left: 5%;
+    vertical-align: top;
+}
+
+.button {
+    background-color: white;
+    color: black;
+
+    border: 1px;
+    border-radius: 10px;
+    display: inline-block;
+    padding: 10px;
+    margin: 5px;
+}
