@@ -20,39 +20,46 @@ var WordsCloud = React.createClass({
     var wordButton = function(word) {
       var onWordClick = this.onWordClick.bind(this, word);
       return <div className="button"
+                  key={word}
                   onClick={onWordClick}>{word}</div>;
     };
+
+    var words = this.props.words;
     return <div className="words col">
-      {this.props.words.map(wordButton.bind(this))}
+      {words.map(wordButton.bind(this))}
     </div>;
   }
 });
 
 
 var GameControls = React.createClass({
+  componentDidMount: function() {
+    this.config = {};
+  },
+
+  onChange: function (event) {
+    this.config[event.target.name] = event.target.value;
+    this.props.onConfigure(this.config);
+  },
+
   render: function() {
+
+    var comboBox = function (property, options) {
+      return <div className="col {property}">
+        <select name={property} onChange={this.onChange}>
+          <option value="">Choose {property}...</option>
+          {options.map(function (option) {
+            return <option key={option} value={option}>{option}</option>
+          })}
+        </select>
+      </div>
+    }
+
     return <div className="row controls">
       <div className="col">Guessing signs</div>
-      <div className="col lang">
-        <select name="lang">
-          <option value="fr">LSF (Fr)</option>
-          <option value="en-US">ASL (USA)</option>
-        </select>
-      </div>
-      <div className="col difficulty">
-        <select name="difficulty">
-          <option>Easy</option>
-          <option>Medium</option>
-          <option>Hard</option>
-        </select>
-      </div>
-      <div className="col category">
-        <select name="category">
-          <option>Verb</option>
-          <option>Colour</option>
-          <option>Music</option>
-        </select>
-      </div>
+      {comboBox.call(this, 'lang', this.props.langs)}
+      {comboBox.call(this, 'difficulty', this.props.difficulties)}
+      {comboBox.call(this, 'category', this.props.categories)}
       <div className="score col">{this.props.score}/{this.props.total}</div>
   </div>;
   }
@@ -60,12 +67,40 @@ var GameControls = React.createClass({
 
 
 var GameApp = React.createClass({
+
   getInitialState: function() {
     return {
+      levels: this.props.database,
       current: 0,
       score: 0,
       total: 0
     };
+  },
+
+  getFilters: function () {
+    var filters = {
+      lang: this.state.lang,
+      difficulty: this.state.difficulty,
+      category: this.state.category
+    };
+    for(var k in filters)
+      if(!filters[k]) delete filters[k];
+    return filters;
+  },
+
+  onConfigure: function (config) {
+    var newstate = _.extend(this.getInitialState(), config);
+    this.setState(newstate);
+    var matching = _.where(this.props.database, this.getFilters());
+    this.setState({levels: matching});
+  },
+
+  facetList: function (property) {
+    var filters = this.getFilters();
+    delete filters[property];
+    var matching = _.where(this.props.database, filters);
+    var facets = _.pluck(matching, property);
+    return _.uniq(facets.sort(), true);
   },
 
   onPlay: function (success) {
@@ -75,7 +110,7 @@ var GameApp = React.createClass({
     // Jump to next level if correct
     if (success) {
       score++;
-      next = ++next % this.props.database.length;
+      next = ++next % this.state.levels.length;
     }
 
     this.setState({
@@ -86,9 +121,13 @@ var GameApp = React.createClass({
   },
 
   render: function() {
-    var level = this.props.database[this.state.current];
+    var level = this.state.levels[this.state.current];
     return <div>
-      <GameControls score={this.state.score}
+      <GameControls onConfigure={this.onConfigure}
+                    langs={this.facetList('lang')}
+                    difficulties={this.facetList('difficulty')}
+                    categories={this.facetList('category')}
+                    score={this.state.score}
                     total={this.state.total} />
       <div className="content row">
         <VideoPlayer video={level.video} />

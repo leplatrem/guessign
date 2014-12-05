@@ -24,6 +24,7 @@ var levels = [
   {
     word: "Salle de classe",
     words: ["Cantine", "Salle de classe", "Tableau"],
+    lang: "fr",
     category: "À l'école",
     difficulty: "Moyen",
     video: {
