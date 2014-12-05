@@ -3,7 +3,10 @@
 var levels = [
   {
     word: "Play",
-    url: "http://media.spreadthesign.com/video/mp4/13/49199.mp4",
+    video: {
+      url: "http://media.spreadthesign.com/video/mp4/13/49199.mp4",
+      attributions: "Spreadthesign.com"
+    },
     words: ["Eat", "Play", "Jump"]
   }
 ];
@@ -12,7 +15,8 @@ var levels = [
 var VideoPlayer = React.createClass({
   render: function() {
     return <div className="player col">
-      <video src={this.props.url}></video>
+      <video src={this.props.video.url} autoPlay controls="true"></video>
+      <div className="attributions">&copy; {this.props.video.attributions}</div>
     </div>;
   }
 });
@@ -38,7 +42,7 @@ var GameLevel = React.createClass({
 
   render: function() {
     return <div className="content row">
-      <VideoPlayer url={this.props.level.url}/>
+      <VideoPlayer video={this.props.level.video}/>
       <WordsCloud words={this.props.level.words} onPlay={this.onPlay}/>
     </div>;
   }

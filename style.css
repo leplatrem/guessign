@@ -18,6 +18,10 @@ body {
     width: 90%;
 }
 
+.player .attributions {
+    font-size: .5em;
+}
+
 .words {
     padding-left: 5%;
     vertical-align: top;
