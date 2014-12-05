@@ -6,24 +6,10 @@
         <link href="style.css" rel="stylesheet">
     </head>
     <body>
-        <div class="row">
-            <div class="col">Guess signs</div>
-            <div class="col controls">
-                <select name="lang">
-                    <option>Français</option>
-                </select>
-            </div>
-            <div class="score col">10/20</div>
-        </div>
-        <div class="content row">
-            <div class="player col">
-                <video src="http://media.spreadthesign.com/video/mp4/13/49199.mp4"></video>
-            </div>
-            <div class="words col">
-                <div class="button">Eat</div>
-                <div class="button">Talk</div>
-                <div class="button">Play</div>
-            </div>
-        </div>
+        <div id="container"></div>
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.11.1/react.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.11.1/JSXTransformer.js"></script>
+        <script type="text/jsx" src="main.js"></script>
     </body>
 </html>
