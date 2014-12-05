@@ -20,8 +20,9 @@ var VideoPlayer = React.createClass({
 
 var WordsCloud = React.createClass({
   render: function() {
+    var onPlay = this.props.onPlay;
     var wordButton = function(word) {
-      return <div className="button">{word}</div>;
+      return <div className="button" onClick={onPlay.bind(null, word)}>{word}</div>;
     };
     return <div className="words col">{this.props.words.map(wordButton)}</div>;
   }
@@ -29,10 +30,16 @@ var WordsCloud = React.createClass({
 
 
 var GameLevel = React.createClass({
+  onPlay: function (word) {
+    if (word == this.props.level.word) {
+      alert('Yeah!');
+    }
+  },
+
   render: function() {
     return <div className="content row">
       <VideoPlayer url={this.props.level.url}/>
-      <WordsCloud words={this.props.level.words}/>
+      <WordsCloud words={this.props.level.words} onPlay={this.onPlay}/>
     </div>;
   }
 });
