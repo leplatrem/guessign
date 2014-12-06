@@ -32,4 +32,26 @@ var levels = [
       attributions: "Spreadthesign.com"
     },
   },
+  {
+    word: "Aimer",
+    words: ["Bonjour", "Retourner", "Aimer"],
+    lang: "fr",
+    category: "Émotions",
+    difficulty: "Facile",
+    video: {
+      url: "http://media.spreadthesign.com/video/mp4/10/4817.mp4",
+      attributions: "Spreadthesign.com"
+    },
+  },
+  {
+    word: "Confiance",
+    words: ["Possible", "Confirmer", "Confiance"],
+    lang: "fr",
+    category: "Émotions",
+    difficulty: "Moyen",
+    video: {
+      url: "http://media.spreadthesign.com/video/mp4/10/20320.mp4",
+      attributions: "Spreadthesign.com"
+    },
+  },
 ];
