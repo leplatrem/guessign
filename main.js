@@ -172,12 +172,10 @@ var GameApp = React.createClass({
                     onPlay={this.onPlay} />
       </section>
 
-      <footer>
-        <GameControls onConfigure={this.onConfigure}
-                      langs={this.facetList('lang', true)}
-                      difficulties={this.facetList('difficulty')}
-                      categories={this.facetList('category')} />
-      </footer>
+      <GameControls onConfigure={this.onConfigure}
+                    langs={this.facetList('lang', true)}
+                    difficulties={this.facetList('difficulty')}
+                    categories={this.facetList('category')} />
     </div>;
   }
 });
