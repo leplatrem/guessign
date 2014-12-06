@@ -48,11 +48,37 @@ body {
 .button {
     background-color: white;
     color: black;
+    border: solid 1px white;
 
+    transition: all 200ms ease;
     cursor: pointer;
-    border: 1px;
     border-radius: 10px;
     display: inline-block;
-    padding: 10px;
+    padding: 0.2em 1em;
     margin: 5px;
+    line-height: 2em;
+}
+
+.font--sans {
+    font-family: Lato,"Helvetica Neue",Arial,Helvetica,sans-serif;
+}
+
+.font--hand {
+    font-family: KatamotzIkasiMedium;
+}
+
+.font--machine {
+    font-family: Teleindicadores1Regular;
+}
+
+.case--lower {
+    text-transform: lowercase;
+}
+
+.case--capital {
+    text-transform: capitalize;
+}
+
+.case--upper {
+    text-transform: uppercase;
 }

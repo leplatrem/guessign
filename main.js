@@ -19,9 +19,11 @@ var WordsCloud = React.createClass({
   render: function() {
     var wordButton = function(word) {
       var onWordClick = this.onWordClick.bind(this, word);
-      return <div className="button"
-                  key={word}
-                  onClick={onWordClick}>{word}</div>;
+      var font = _.sample(['hand', 'machine', 'sans', 'serif']);
+      var lettercase = _.sample(['lower', 'first', 'upper']);
+      return <div key={word}
+        className={'button font--' + font + ' case--' + lettercase}
+        onClick={onWordClick}>{word}</div>;
     };
 
     var words = this.props.words;
