@@ -33,22 +33,39 @@ var WordsCloud = React.createClass({
 
 
 var GameControls = React.createClass({
+  getInitialState: function() {
+    var state = {};
+
+    // Detect language from browser
+    if (this.props.langs.indexOf(navigator.language) >= 0) {
+      state.lang = navigator.language;
+    }
+    var short = navigator.language.split('-')[0];
+    if (this.props.langs.indexOf(short) >= 0) {
+      state.lang = short;
+    }
+
+    return state;
+  },
+
   componentDidMount: function() {
-    this.config = {};
+    this.props.onConfigure(this.state);
   },
 
   onChange: function (event) {
-    this.config[event.target.name] = event.target.value;
+    this.state[event.target.name] = event.target.value;
     // Remove empty values
-    for(var k in this.config)
-      if(!this.config[k]) delete this.config[k];
-    this.props.onConfigure(this.config);
+    for(var k in this.state)
+      if(!this.state[k]) delete this.state[k];
+    this.props.onConfigure(this.state);
   },
 
   render: function() {
     var comboBox = function (property, options) {
       return <div className="col {property}">
-        <select name={property} onChange={this.onChange}>
+        <select name={property}
+                value={this.state[property]}
+                onChange={this.onChange}>
           <option value="">Choose {property}...</option>
           {options.map(function (option) {
             return <option key={option} value={option}>{option}</option>
@@ -78,7 +95,6 @@ var Scores = React.createClass({
 
 
 var GameApp = React.createClass({
-
   getInitialState: function() {
     return {
       levels: this.props.database,
@@ -94,8 +110,9 @@ var GameApp = React.createClass({
     this.setState(newstate);
   },
 
-  facetList: function (property) {
-    var facets = _.pluck(this.state.levels, property);
+  facetList: function (property, complete) {
+    var list = complete ? this.props.database : this.state.levels;
+    var facets = _.pluck(list, property);
     return _.uniq(facets.sort(), true);
   },
 
@@ -133,7 +150,7 @@ var GameApp = React.createClass({
       </div>
 
       <GameControls onConfigure={this.onConfigure}
-                    langs={this.facetList('lang')}
+                    langs={this.facetList('lang', true)}
                     difficulties={this.facetList('difficulty')}
                     categories={this.facetList('category')} />
     </div>;
