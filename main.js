@@ -47,17 +47,21 @@ var WordsCloud = React.createClass({
 
 var GameControls = React.createClass({
   getInitialState: function() {
-    var state = {};
-
-    // Detect language from browser
-    if (this.props.langs.indexOf(navigator.language) >= 0) {
-      state.lang = navigator.language;
+    // Already configured ?
+    var config = localStorage.getItem('config');
+    if (config) {
+      return JSON.parse(config);
     }
+
+    var state = {};
+    // Detect language from browser
     var short = navigator.language.split('-')[0];
     if (this.props.langs.indexOf(short) >= 0) {
       state.lang = short;
     }
-
+    if (this.props.langs.indexOf(navigator.language) >= 0) {
+      state.lang = navigator.language;
+    }
     return state;
   },
 
@@ -70,6 +74,11 @@ var GameControls = React.createClass({
     // Remove empty values
     for(var k in this.state)
       if(!this.state[k]) delete this.state[k];
+
+    // Save for next visit
+    localStorage.setItem('config', JSON.stringify(this.state));
+
+    // Notify parent
     this.props.onConfigure(this.state);
   },
 
