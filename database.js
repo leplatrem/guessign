@@ -1,7 +1,7 @@
 var levels = [
   {
     word: "Jouer",
-    words: ["Manger", "Jouer", "Sauter"],
+    words: ["Manger", "Démarrer", "Sauter"],
     lang: "fr",
     category: "Verbe",
     difficulty: "Facile",
@@ -12,7 +12,7 @@ var levels = [
   },
   {
     word: "Explain",
-    words: ["Explain", "Play", "Shake"],
+    words: ["Express", "Play", "Shake"],
     lang: "en-US",
     category: "Verb",
     difficulty: "Easy",
@@ -23,7 +23,7 @@ var levels = [
   },
   {
     word: "Salle de classe",
-    words: ["Cantine", "Salle de classe", "Tableau"],
+    words: ["Cantine", "Spectacle", "Tableau"],
     lang: "fr",
     category: "À l'école",
     difficulty: "Moyen",
@@ -34,7 +34,7 @@ var levels = [
   },
   {
     word: "Aimer",
-    words: ["Bonjour", "Retourner", "Aimer"],
+    words: ["Bonjour", "Retourner", "Offrir"],
     lang: "fr",
     category: "Émotions",
     difficulty: "Facile",
@@ -45,7 +45,7 @@ var levels = [
   },
   {
     word: "Confiance",
-    words: ["Possible", "Confirmer", "Confiance"],
+    words: ["Possible", "Confirmer", "Solide"],
     lang: "fr",
     category: "Émotions",
     difficulty: "Moyen",

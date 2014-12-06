@@ -138,6 +138,21 @@ var GameApp = React.createClass({
     return _.uniq(facets.sort(), true);
   },
 
+  getLevel: function () {
+    return this.state.levels[this.state.current];
+  },
+
+  getSampleWords: function () {
+    var level = this.getLevel();
+    var basic = level.words;
+    basic.push(level.word);
+
+    var total = 6;
+    var others = _.uniq(_.flatten(_.pluck(this.state.levels, 'words')));
+    var extra = _.sample(others, total - basic.length);
+    return _.shuffle(basic.concat(extra));
+  },
+
   onPlay: function (success) {
     this.setState({
       total: this.state.total + 1,
@@ -163,8 +178,8 @@ var GameApp = React.createClass({
   },
 
   render: function() {
-    var level = this.state.levels[this.state.current];
-    var words = level.words;
+    var level = this.getLevel();
+    var words = this.getSampleWords();
 
     return <div>
       <header>
