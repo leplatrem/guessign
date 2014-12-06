@@ -1,26 +1,35 @@
-@media (min-width: 30em) {
-    .row { width: 100%; display: table; table-layout: fixed; }
-    .col { display: table-cell; }
-}
-
 body {
     background-color: black;
     color: white;
 }
 
-.controls {
+header {
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 3em;
+}
+
+header::before {
+    content: '\270B → ?';
+}
+
+footer {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+
     border-top: 1px solid white;
     font-size: 1.2em;
-    padding-top: 20px;
 }
 
-.title {
-    width: 30%;
-    font-weight: bold;
+.controls::before {
+    content: 'Settings ';
 }
 
-.infos {
-    font-size: 3em;
+.control {
+    display: inline-block;;
+    margin-right: 10px;
 }
 
 .score .good::after {
@@ -35,28 +44,71 @@ body {
     content: '\2639';
 }
 
-.player > video {
-    width: 90%;
+.content {
+    display: flex;
+    justify-content: space-between;
 }
 
-.words {
-    padding-left: 5%;
-    vertical-align: middle;
+.content .player {
+    width: 50%;
+}
+
+.content .guess {
+    width: 50%;
+    text-align: center;
+}
+
+@media (max-width: 50em) {
+    .content {
+        flex-direction: column;
+    }
+
+    .content .player {
+        width: 100%;
+    }
+
+    .content .guess {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+.content .player video {
+    width: 100%;
+}
+
+.content .guess .words {
+    padding: 0 20px;
     font-size: 3em;
 }
 
-.button {
-    background-color: white;
-    color: black;
-    border: solid 1px white;
+.content .guess .words .button {
+    margin-bottom: 20px;
+    line-height: 2em;
+}
 
-    transition: all 200ms ease;
-    cursor: pointer;
-    border-radius: 10px;
-    display: inline-block;
+.content .guess .infos {
+    display: flex;
+    justify-content: space-around;
+}
+
+
+.button {
     padding: 0.2em 1em;
     margin: 5px;
-    line-height: 2em;
+
+    color: black;
+    background-color: white;
+    border: solid 1px white;
+    border-radius: 10px;
+    cursor: pointer;
+
+    transition: all 200ms ease;
+}
+
+.button:active {
+    background-color: black;
+    color: white;
 }
 
 .font--sans {

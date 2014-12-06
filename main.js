@@ -2,7 +2,7 @@
 
 var VideoPlayer = React.createClass({
   render: function() {
-    return <div className="player col">
+    return <div className="player">
       <video src={this.props.video.url} autoPlay controls></video>
       <div className="attributions">&copy; {this.props.video.attributions}</div>
     </div>;
@@ -12,23 +12,34 @@ var VideoPlayer = React.createClass({
 
 var WordsCloud = React.createClass({
   onWordClick: function (word) {
-    var success = word == this.props.word;
+    var success = word == this.props.level.word;
     this.props.onPlay(success);
   },
 
   render: function() {
     var wordButton = function(word) {
-      var onWordClick = this.onWordClick.bind(this, word);
       var font = _.sample(['hand', 'machine', 'sans', 'serif']);
       var lettercase = _.sample(['lower', 'first', 'upper']);
+
+      var onWordClick = this.onWordClick.bind(this, word);
+
       return <div key={word}
         className={'button font--' + font + ' case--' + lettercase}
         onClick={onWordClick}>{word}</div>;
     };
 
     var words = this.props.words;
-    return <div className="words col">
-      {words.map(wordButton.bind(this))}
+    var level = this.props.level;
+
+    return <div className="guess">
+      <div className="words">
+        {words.map(wordButton.bind(this))}
+      </div>
+      <div className="infos">
+        <div className="lang col">{level.lang}</div>
+        <div className="difficulty col">{level.difficulty}</div>
+        <div className="category col">{level.category}</div>
+      </div>
     </div>;
   }
 });
@@ -64,7 +75,7 @@ var GameControls = React.createClass({
 
   render: function() {
     var comboBox = function (property, options) {
-      return <div className="col {property}">
+      return <div className={'control control--' + property}>
         <select name={property}
                 value={this.state[property]}
                 onChange={this.onChange}>
@@ -76,8 +87,7 @@ var GameControls = React.createClass({
       </div>
     }
 
-    return <div className="row controls">
-      <div class="col">Settings</div>
+    return <div className="controls">
       {comboBox.call(this, 'lang', this.props.langs)}
       {comboBox.call(this, 'difficulty', this.props.difficulties)}
       {comboBox.call(this, 'category', this.props.categories)}
@@ -88,7 +98,7 @@ var GameControls = React.createClass({
 
 var Scores = React.createClass({
   render: function () {
-    return <div className="score col">
+    return <div className="score">
       <span className="good">{this.props.score}</span>
       <span className="bad">{this.props.total - this.props.score}</span>
     </div>
@@ -131,30 +141,27 @@ var GameApp = React.createClass({
 
   render: function() {
     var level = this.state.levels[this.state.current];
+    var words = level.words;
 
     return <div>
-      <div className="infos row">
-        <span className="title col">Guessing signs</span>
-        <span className="lang col">{level.lang}</span>
-        <span className="difficulty col">{level.difficulty}</span>
-        <span className="category col">{level.category}</span>
-        <div className="col">
-          <Scores score={this.state.score}
-                  total={this.state.total} />
-        </div>
-      </div>
+      <header>
+        <Scores score={this.state.score}
+                total={this.state.total} />
+      </header>
 
-      <div className="content row">
+      <section className="content">
         <VideoPlayer video={level.video} />
-        <WordsCloud word={level.word}
-                    words={level.words}
+        <WordsCloud level={level}
+                    words={words}
                     onPlay={this.onPlay} />
-      </div>
+      </section>
 
-      <GameControls onConfigure={this.onConfigure}
-                    langs={this.facetList('lang', true)}
-                    difficulties={this.facetList('difficulty')}
-                    categories={this.facetList('category')} />
+      <footer>
+        <GameControls onConfigure={this.onConfigure}
+                      langs={this.facetList('lang', true)}
+                      difficulties={this.facetList('difficulty')}
+                      categories={this.facetList('category')} />
+      </footer>
     </div>;
   }
 });
