@@ -92,6 +92,26 @@ footer {
     justify-content: space-around;
 }
 
+.feedback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    background: black;
+    font-size: 40em;
+    text-align: center;
+}
+
+.feedback-good::after {
+    content: '\263a';
+    bottom: 0;
+}
+
+.feedback-bad::after {
+    content: '\2639';
+    bottom: 0;
+}
 
 .button {
     padding: 0.2em 1em;

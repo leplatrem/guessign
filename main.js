@@ -112,7 +112,8 @@ var GameApp = React.createClass({
       levels: this.props.database,
       current: 0,
       score: 0,
-      total: 0
+      total: 0,
+      feedback: ''
     };
   },
 
@@ -129,14 +130,27 @@ var GameApp = React.createClass({
   },
 
   onPlay: function (success) {
-    if (success) {
-      var next = (this.state.current + 1) % this.state.levels.length;
-      this.setState({
-        score: this.state.score + 1,
-        current: next
-      });
-    }
-    this.setState({total: this.state.total + 1});
+    this.setState({
+      total: this.state.total + 1,
+      feedback: success ? 'good' : 'bad'
+    });
+
+    setTimeout(function () {
+      if (success) {
+        this.nextLevel();
+      }
+      else {
+        this.setState({feedback: ''});
+      }
+    }.bind(this), 500);
+  },
+
+  nextLevel: function () {
+    this.setState({
+      feedback: '',
+      score: this.state.score + 1,
+      current: (this.state.current + 1) % this.state.levels.length
+    });
   },
 
   render: function() {
@@ -148,6 +162,8 @@ var GameApp = React.createClass({
         <Scores score={this.state.score}
                 total={this.state.total} />
       </header>
+
+      <div className={'feedback feedback-' + this.state.feedback} />
 
       <section className="content">
         <VideoPlayer video={level.video} />
