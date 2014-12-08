@@ -54,4 +54,37 @@ var levels = [
       attributions: "Spreadthesign.com"
     },
   },
+  {
+    word: "Je refuse",
+    words: [],
+    lang: "fr",
+    category: "Verbe",
+    difficulty: "Difficile",
+    video: {
+      url: "http://www.youtubeinmp4.com/redirect.php?video=HPSCgRCbqdk",
+      attributions: "sourds.net"
+    },
+  },
+  {
+    word: "Gros",
+    words: ["Gonflé"],
+    lang: "fr",
+    category: "Mot",
+    difficulty: "Facile",
+    video: {
+      url: "http://www.youtubeinmp4.com/redirect.php?video=OymHJKAHE4c",
+      attributions: "sourds.net"
+    },
+  },
+  {
+    word: "Coton",
+    words: ["Fleur"],
+    lang: "fr",
+    category: "Mot",
+    difficulty: "Facile",
+    video: {
+      url: "http://www.youtubeinmp4.com/redirect.php?video=IL_xf2grN8U",
+      attributions: "sourds.net"
+    },
+  },
 ];
