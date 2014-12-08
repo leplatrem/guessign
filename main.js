@@ -17,13 +17,13 @@ var WordsCloud = React.createClass({
   },
 
   render: function() {
-    var wordButton = function(word) {
+    var wordButton = function(word, i) {
       var font = _.sample(this.props.font);
       var lettercase = _.sample(this.props.lettercase);
 
       var onWordClick = this.onWordClick.bind(this, word);
 
-      return <div key={word}
+      return <div key={i}
         className={'button font--' + font + ' case--' + lettercase}
         onClick={onWordClick}>{word}</div>;
     };
@@ -102,6 +102,7 @@ var GameControls = React.createClass({
       {comboBox.call(this, 'category', this.props.categories)}
       {comboBox.call(this, 'font', this.props.fonts)}
       {comboBox.call(this, 'lettercase', this.props.lettercases)}
+      {comboBox.call(this, 'choices', _.range(2, 8))}
   </div>;
   }
 });
@@ -130,11 +131,11 @@ var GameApp = React.createClass({
   },
 
   onConfigure: function (config) {
-    var filters = _.omit(config, 'font', 'lettercase');
+    var filters = _.omit(config, 'font', 'lettercase', 'choices');
     var matching = _.where(this.props.database, filters);
     var newstate = _.extend(this.getInitialState(), {
       config: config,
-      levels: matching,
+      levels: _.shuffle(matching),
     });
     this.setState(newstate);
   },
@@ -151,13 +152,17 @@ var GameApp = React.createClass({
 
   getSampleWords: function () {
     var level = this.getLevel();
-    var basic = level.words;
-    basic.push(level.word);
+    var words = level.words;
+    var total = this.state.config.choices || 5;
 
-    var total = 6;
-    var others = _.uniq(_.flatten(_.pluck(this.state.levels, 'words')));
-    var extra = _.sample(others, total - basic.length);
-    return _.shuffle(basic.concat(extra));
+    if (total > words.length) {
+      var others = _.uniq(_.flatten(_.pluck(this.state.levels, 'words')));
+      var extra = _.sample(_.without(others, words), total - words.length);
+      words = words.concat(extra);
+    }
+
+    words.unshift(level.word);
+    return _.shuffle(words.slice(0, total));
   },
 
   onPlay: function (success) {

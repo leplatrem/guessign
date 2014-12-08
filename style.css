@@ -96,11 +96,11 @@ header::before {
 }
 
 .feedback::after {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 0%;
+    height: 0;
 
     background: black;
     font-size: 40em;
