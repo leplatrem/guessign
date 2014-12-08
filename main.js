@@ -190,7 +190,7 @@ var GameApp = React.createClass({
       <div className={'feedback feedback-' + this.state.feedback} />
 
       <section className="content">
-        <VideoPlayer video={level.video} />
+        <VideoPlayer video={this.state.feedback ? {} : level.video} />
         <WordsCloud level={level}
                     words={words}
                     onPlay={this.onPlay} />
