@@ -55,8 +55,8 @@ var levels = [
     },
   },
   {
-    word: "Confiance",
-    words: ["Possible", "Confirmer", "Solide"],
+    word: "Vérité",
+    words: ["Confiance", "Hérité", "Varicelle"],
     lang: "fr",
     category: "Émotions",
     difficulty: "Moyen",
