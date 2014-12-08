@@ -181,13 +181,11 @@ var GameApp = React.createClass({
     var level = this.getLevel();
     var words = this.getSampleWords();
 
-    return <div>
+    return <div className={'feedback feedback-' + this.state.feedback}>
       <header>
         <Scores score={this.state.score}
                 total={this.state.total} />
       </header>
-
-      <div className={'feedback feedback-' + this.state.feedback} />
 
       <section className="content">
         <VideoPlayer video={this.state.feedback ? {} : level.video} />
