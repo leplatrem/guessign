@@ -22,6 +22,17 @@ var levels = [
     },
   },
   {
+    word: "Sorry",
+    words: ["Hurt", "Worry", "Sour"],
+    lang: "en-US",
+    category: "Interjection",
+    difficulty: "Easy",
+    video: {
+      url: "http://media.spreadthesign.com/video/mp4/13/58480.mp4",
+      attributions: "Spreadthesign.com"
+    },
+  },
+  {
     word: "Salle de classe",
     words: ["Cantine", "Spectacle", "Tableau"],
     lang: "fr",
