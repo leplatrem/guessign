@@ -102,7 +102,7 @@ var GameControls = React.createClass({
       {comboBox.call(this, 'category', this.props.categories)}
       {comboBox.call(this, 'font', this.props.fonts)}
       {comboBox.call(this, 'lettercase', this.props.lettercases)}
-      {comboBox.call(this, 'choices', _.range(2, 8))}
+      {comboBox.call(this, 'choices', this.props.choices)}
   </div>;
   }
 });
@@ -219,7 +219,8 @@ var GameApp = React.createClass({
                     difficulties={this.facetList('difficulty')}
                     categories={this.facetList('category')}
                     fonts={fonts}
-                    lettercases={lettercases} />
+                    lettercases={lettercases}
+                    choices={_.range(2, 8)} />
     </div>;
   }
 });
