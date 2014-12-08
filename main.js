@@ -18,8 +18,8 @@ var WordsCloud = React.createClass({
 
   render: function() {
     var wordButton = function(word) {
-      var font = _.sample(['hand', 'machine', 'sans', 'serif']);
-      var lettercase = _.sample(['lower', 'first', 'upper']);
+      var font = _.sample(this.props.font);
+      var lettercase = _.sample(this.props.lettercase);
 
       var onWordClick = this.onWordClick.bind(this, word);
 
@@ -100,6 +100,8 @@ var GameControls = React.createClass({
       {comboBox.call(this, 'lang', this.props.langs)}
       {comboBox.call(this, 'difficulty', this.props.difficulties)}
       {comboBox.call(this, 'category', this.props.categories)}
+      {comboBox.call(this, 'font', this.props.fonts)}
+      {comboBox.call(this, 'lettercase', this.props.lettercases)}
   </div>;
   }
 });
@@ -118,6 +120,7 @@ var Scores = React.createClass({
 var GameApp = React.createClass({
   getInitialState: function() {
     return {
+      config: {},
       levels: this.props.database,
       current: 0,
       score: 0,
@@ -127,8 +130,12 @@ var GameApp = React.createClass({
   },
 
   onConfigure: function (config) {
-    var matching = _.where(this.props.database, config);
-    var newstate = _.extend(this.getInitialState(), {levels: matching});
+    var filters = _.omit(config, 'font', 'lettercase');
+    var matching = _.where(this.props.database, filters);
+    var newstate = _.extend(this.getInitialState(), {
+      config: config,
+      levels: matching,
+    });
     this.setState(newstate);
   },
 
@@ -181,6 +188,12 @@ var GameApp = React.createClass({
     var level = this.getLevel();
     var words = this.getSampleWords();
 
+    var config = this.state.config;
+    var fonts = ['hand', 'machine', 'sans', 'serif'];
+    var font = config.font ? [config.font] : fonts;
+    var lettercases = ['lower', 'first', 'upper'];
+    var lettercase = config.lettercase ? [config.lettercase] : lettercases;
+
     return <div className={'feedback feedback-' + this.state.feedback}>
       <header>
         <Scores score={this.state.score}
@@ -189,7 +202,9 @@ var GameApp = React.createClass({
 
       <section className="content">
         <VideoPlayer video={this.state.feedback ? {} : level.video} />
-        <WordsCloud level={level}
+        <WordsCloud font={font}
+                    lettercase={lettercase}
+                    level={level}
                     words={words}
                     onPlay={this.onPlay} />
       </section>
@@ -197,7 +212,9 @@ var GameApp = React.createClass({
       <GameControls onConfigure={this.onConfigure}
                     langs={this.facetList('lang', true)}
                     difficulties={this.facetList('difficulty')}
-                    categories={this.facetList('category')} />
+                    categories={this.facetList('category')}
+                    fonts={fonts}
+                    lettercases={lettercases} />
     </div>;
   }
 });
