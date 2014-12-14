@@ -186,7 +186,7 @@ var GameApp = React.createClass({
     var words = this.getSampleWords();
 
     var config = this.state.config;
-    var fonts = ['hand', 'machine', 'sans', 'serif'];
+    var fonts = ['hand', 'machine', 'gothic', 'script', 'sans', 'serif'];
     var font = config.font ? [config.font] : fonts;
     var lettercases = ['lower', 'first', 'upper'];
     var lettercase = config.lettercase ? [config.lettercase] : lettercases;

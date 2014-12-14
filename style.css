@@ -149,6 +149,14 @@ header::before {
     font-family: Teleindicadores1Regular;
 }
 
+.font--gothic {
+    font-family: 'GamalielMedium';
+}
+
+.font--script {
+    font-family: 'DancingScriptOTRegular';
+}
+
 .case--lower {
     text-transform: lowercase;
 }
