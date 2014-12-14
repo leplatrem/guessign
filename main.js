@@ -28,17 +28,9 @@ var WordsCloud = React.createClass({
         onClick={onWordClick}>{word}</div>;
     };
 
-    var words = this.props.words;
-    var level = this.props.level;
-
     return <div className="guess">
       <div className="words">
-        {words.map(wordButton.bind(this))}
-      </div>
-      <div className="infos">
-        <div className="lang col">{level.lang}</div>
-        <div className="difficulty col">{level.difficulty}</div>
-        <div className="category col">{level.category}</div>
+        {this.props.words.map(wordButton.bind(this))}
       </div>
     </div>;
   }
