@@ -41,44 +41,47 @@ var GameControls = React.createClass({
   getInitialState: function() {
     // Already configured ?
     var config = localStorage.getItem('config');
-    if (config) {
-      return JSON.parse(config);
+
+    if (!config) {
+      config = {};
+      // Detect language from browser
+      var short = navigator.language.split('-')[0];
+      if (this.props.langs.indexOf(short) >= 0) {
+        config.lang = short;
+      }
+      if (this.props.langs.indexOf(navigator.language) >= 0) {
+        config.lang = navigator.language;
+      }
     }
 
-    var state = {};
-    // Detect language from browser
-    var short = navigator.language.split('-')[0];
-    if (this.props.langs.indexOf(short) >= 0) {
-      state.lang = short;
-    }
-    if (this.props.langs.indexOf(navigator.language) >= 0) {
-      state.lang = navigator.language;
-    }
-    return state;
+    return {config: config};
   },
 
   componentDidMount: function() {
-    this.props.onConfigure(this.state);
+    // Make sure parent is aware of config restored from localStorage
+    this.props.onConfigure(this.state.config);
   },
 
   onChange: function (event) {
-    this.state[event.target.name] = event.target.value;
-    // Remove empty values
-    for(var k in this.state)
-      if(!this.state[k]) delete this.state[k];
+    if (event.target.value) {
+      this.state[event.target.name] = event.target.value;
+    }
+    else {
+      delete this.state.config[event.target.name];
+    }
 
     // Save for next visit
-    localStorage.setItem('config', JSON.stringify(this.state));
+    localStorage.setItem('config', JSON.stringify(this.state.config));
 
     // Notify parent
-    this.props.onConfigure(this.state);
+    this.props.onConfigure(this.state.config);
   },
 
   render: function() {
     var comboBox = function (property, options) {
       return <div className={'control control--' + property}>
         <select name={property}
-                value={this.state[property]}
+                value={this.state.config[property]}
                 onChange={this.onChange}>
           <option value="">Choose {property}...</option>
           {options.map(function (option) {
@@ -133,6 +136,8 @@ var GameApp = React.createClass({
   },
 
   facetList: function (property, complete) {
+    // Return all distinct values of ``property`` within currently filtered levels
+    // If ``complete`` is true, lookup property on all available levels.
     var list = complete ? this.props.database : this.state.levels;
     var facets = _.pluck(list, property);
     return _.uniq(facets.sort(), true);
