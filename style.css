@@ -59,6 +59,10 @@ header::before {
 .content .guess {
     width: 50%;
     text-align: center;
+    /* Center vertically */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 @media (max-width: 50em) {
@@ -87,7 +91,8 @@ header::before {
 
 .content .guess .words .button {
     margin-bottom: 20px;
-    line-height: 2em;
+    min-height: 1.5em;
+    padding-top: 0.5em;
 }
 
 .content .guess .infos {
@@ -120,6 +125,7 @@ header::before {
 }
 
 .button {
+    display: inline-block;
     padding: 0.2em 1em;
     margin: 5px;
 
