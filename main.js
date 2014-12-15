@@ -48,11 +48,10 @@ var GameControls = React.createClass({
     else {
       config = {};
       // Detect language from browser
-      var short = navigator.language.split('-')[0];
-      if (this.props.langs.indexOf(short) >= 0) {
+      if (this.props.langs.indexOf(i18n.language.short) >= 0) {
         config.lang = short;
       }
-      if (this.props.langs.indexOf(navigator.language) >= 0) {
+      if (this.props.langs.indexOf(i18n.language.long) >= 0) {
         config.lang = navigator.language;
       }
     }
@@ -86,9 +85,9 @@ var GameControls = React.createClass({
         <select name={property}
                 value={this.state.config[property]}
                 onChange={this.onChange}>
-          <option value="">Choose {property}...</option>
+          <option value="">{i18n.tr(property)}...</option>
           {options.map(function (option) {
-            return <option key={option} value={option}>{option}</option>
+            return <option key={option} value={option}>{i18n.tr(option)}</option>
           })}
         </select>
       </div>
