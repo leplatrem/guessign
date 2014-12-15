@@ -49,7 +49,7 @@ var GameControls = React.createClass({
       config = {};
       // Detect language from browser
       if (this.props.langs.indexOf(i18n.language.short) >= 0) {
-        config.lang = short;
+        config.lang = i18n.language.short;
       }
       if (this.props.langs.indexOf(i18n.language.long) >= 0) {
         config.lang = navigator.language;
