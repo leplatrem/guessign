@@ -42,7 +42,10 @@ var GameControls = React.createClass({
     // Already configured ?
     var config = localStorage.getItem('config');
 
-    if (!config) {
+    if (config) {
+      config = JSON.parse(config);
+    }
+    else {
       config = {};
       // Detect language from browser
       var short = navigator.language.split('-')[0];
@@ -64,7 +67,7 @@ var GameControls = React.createClass({
 
   onChange: function (event) {
     if (event.target.value) {
-      this.state[event.target.name] = event.target.value;
+      this.state.config[event.target.name] = event.target.value;
     }
     else {
       delete this.state.config[event.target.name];
