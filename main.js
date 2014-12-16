@@ -198,7 +198,7 @@ var GameApp = React.createClass({
     var lettercases = ['lower', 'first', 'upper'];
     var lettercase = config.lettercase ? [config.lettercase] : lettercases;
 
-    return <div className={'feedback feedback-' + this.state.feedback}>
+    return <div className={'main feedback feedback-' + this.state.feedback}>
       <header>
         <Scores score={this.state.score}
                 total={this.state.total} />

@@ -1,8 +1,12 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
 body {
     background-color: black;
     color: white;
     width: 100%;
-    height: 100%;
 }
 
 header {
@@ -16,35 +20,15 @@ header::before {
     content: '\270B → ?';
 }
 
-.controls {
-    width: 100%;
-    margin-top: 20px;
-    padding-top: 10px;
-    text-align: center;
-
-    border-top: 1px solid white;
-    font-size: 1.2em;
+#container, .main {
+    height: 100%;
 }
 
-.controls::before {
-    content: '\2699';
-}
-
-.control {
-    display: inline-block;;
-    margin-left: 10px;
-}
-
-.score .good::after {
-    content: '\263a';
-}
-
-.score .bad::before {
-    content: ' - ';
-}
-
-.score .bad::after {
-    content: '\2639';
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0 10px;
 }
 
 .content {
@@ -95,11 +79,6 @@ header::before {
     padding-top: 0.5em;
 }
 
-.content .guess .infos {
-    display: flex;
-    justify-content: space-around;
-}
-
 .feedback::after {
     position: fixed;
     top: 0;
@@ -122,6 +101,38 @@ header::before {
 
 .feedback-bad::after {
     content: '\2639';
+}
+
+.score .good::after {
+    content: '\263a';
+}
+
+.score .bad::before {
+    content: ' - ';
+}
+
+.score .bad::after {
+    content: '\2639';
+}
+
+.controls {
+    width: 100%;
+    margin-top: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: center;
+
+    border-top: 1px solid white;
+    font-size: 1.2em;
+}
+
+.controls::before {
+    content: '\2699';
+}
+
+.control {
+    display: inline-block;;
+    margin-left: 10px;
 }
 
 .button {
