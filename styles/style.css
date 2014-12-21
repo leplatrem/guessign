@@ -1,0 +1,419 @@
+
+/* GLOBAL *
+ *        */
+
+html, body {
+    height: 100%;
+    width: 100%;
+    font-size: 14px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+}
+
+body {
+    background-color: #eee;
+    color: #333; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+a {
+    color: #329996;
+    text-underline-position: under;
+}
+
+a:hover {
+    color: #236b69;
+}
+
+a:focus, input:focus, select:focus, textarea:focus, video:focus, audio:focus, button:focus, .button:focus {
+    outline: #329996 auto 5px;
+}
+
+.font--sans {
+    font-family: Lato,"Helvetica Neue",Arial,Helvetica,sans-serif;
+}
+
+.font--hand {
+    font-family: KatamotzIkasiMedium;
+}
+
+.font--machine {
+    font-family: Teleindicadores1Regular;
+}
+
+.font--gothic {
+    font-family: 'GamalielMedium';
+}
+
+.font--script {
+    font-family: 'DancingScriptOTRegular';
+}
+
+.case--lower {
+    text-transform: lowercase;
+}
+
+.case--capital {
+    text-transform: capitalize;
+}
+
+.case--upper {
+    text-transform: uppercase;
+}
+
+
+
+
+/* HEADER *
+ *        */
+
+header {
+    height: 1em;
+    text-align: center;
+    font-size: 2em;
+    border-bottom: 1px solid #236b69;
+    background: #329996;
+    color: #fff;
+    padding: 0.8em 0;
+    z-index: 9;
+}
+
+
+
+
+/* GAME CONTAINER *
+ *                */
+
+#container, .main{
+    display: flex;
+    flex: 1;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* GAME CONTROLS *
+ *       */
+
+.game_controls {
+    position: relative;
+    padding: 1rem;
+    font-size: 1.8em;
+    border-bottom: 1px solid #329996;
+    background: #fff;
+    z-index: 9;
+}
+
+.score {
+    float: right;
+    font-size: 1em;
+}
+
+.score .bad::before {
+    content: ' - ';
+}
+
+.settings_toggle {
+    width: 2.5rem;
+    height: 2.5rem;
+    float: left;
+    display: inline-block;
+    font-size: 0.8em;
+    border: 1px solid #329996;
+    color: #fff;
+    background: #329996;
+    cursor: pointer;
+
+    transition: all 200ms ease;
+}
+
+.settings_toggle i {
+    transition: all 200ms ease;
+}
+
+.settings_toggle:hover {
+    background: #2d8784;
+}
+
+.settings_toggle:hover i, .settings_toggle.active i {
+    -webkit-transform: rotate(90deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+        -ms-transform: rotate(90deg);  /* IE 9 */
+            transform: rotate(90deg);  /* Firefox 16+, IE 10+, Opera */
+}
+
+.settings_toggle:active {
+    background: #236b69;
+}
+
+.settings {
+    float: left;
+    text-align: center;
+    position: relative;
+}
+
+@media screen and (min-width: 992px) {
+    .settings_toggle {
+        display: none;
+    }
+
+    .settings {
+        padding-left: 1em;
+    }
+
+    .settings:before {
+        font: normal normal normal 14px/1 FontAwesome;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        content: "\f013";
+        color: #329996;
+        font-size: 0.8em;
+        margin-right: 10px;
+        position: absolute;
+        top: 4px;
+        left: 0;
+    }
+}
+
+@media (max-width: 992px) {
+    .settings {
+        float: none;
+        text-align: center;
+        position: absolute;
+        top: 3.5rem;
+        left: 1rem;
+        width: 80%;
+        padding: 1.5rem;
+        background: #329996;
+        overflow: hidden;
+
+        display: flex;
+        flex-flow: row wrap;
+
+        opacity: 0;
+        margin-top: 0.5em;
+        transition: all 200ms ease;
+
+    }
+
+    .settings.opened {
+        opacity: 1;
+        margin-top: 0;
+    }
+}
+
+.settings .control {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.settings .select-style {
+    border: 1px solid #329996;
+    width: 120px;
+    border-radius: 3px;
+    height: 1em;
+    overflow: hidden;
+    background: #fafafa url("data:image/png;base64,R0lGODlhDwAUAIABAAAAAP///yH5BAEAAAEALAAAAAAPABQAAAIXjI+py+0Po5wH2HsXzmw//lHiSJZmUAAAOw==") no-repeat 90% 50%;
+    position: relative;
+}
+
+.settings .select-style select {
+    position: absolute;
+    width: 130%;
+    top: 0;
+    height: 100%;
+    left: 0;
+    border: none;
+    vertical-align: middle;
+    box-shadow: none;
+    background: transparent;
+    background-image: none;
+    color: #329996;
+}
+
+@media (max-width: 992px) {
+    .settings .control {
+        margin: 0 2%;
+        width: 46%;
+    }
+
+    .settings .select-style {
+        height: 1.5em;
+        width: 100%;
+    }
+
+
+}
+
+
+/* GAME BOARD *
+ *            */
+
+.game_board {
+    padding: 0 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+@media (max-width: 992px) {
+    .game_board {
+        flex-direction: column;
+    }
+}
+
+.game_board .sign {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+@media (min-width: 992px) {
+    .game_board .sign {
+        margin-right: 10px;
+    }
+}
+
+.game_board .guess {
+    flex: 1;
+    text-align: center;
+
+    /* Center vertically */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+@media (min-width: 992px) {
+    .game_board .guess {
+        margin-left: 10px;
+    }
+}
+
+.game_board .player {
+    flex: 1;
+    text-align: center;
+}
+
+@media (min-width: 992px) {
+    .game_board .player video {
+        width: 100%;
+    }
+}
+
+
+@media (max-width: 480px) {
+    .game_board .player video {
+        width: 100%;
+    }
+}
+
+.game_board .answers {
+    font-size: 3em;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+
+
+.game_board .answer {
+    flex: 1;
+    display: inline-block;
+    margin: 5px 0;
+    font-size: 1em;
+    color: #333;
+    background-color: white;
+    border: solid 1px transparent;
+    border-radius: 2px;
+    cursor: pointer;
+
+    transition: all 200ms ease;
+}
+
+@media (min-width: 992px) {
+    .game_board .answer {
+        display: block;
+    }
+}
+
+.game_board .answer:hover {
+    border-color: #329996;
+    color: #329996;
+}
+
+.game_board .answer:active {
+    background-color: #329996;
+    color: white;
+}
+
+
+
+
+/* FEEDBACK *
+ *          */
+
+.feedback::after {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+
+    background: black;
+    font-size: 40em;
+    text-align: center;
+}
+
+.feedback-good::after, .feedback-bad::after {
+    height: 100%;
+}
+
+.feedback-good::after {
+    content: '\263a';
+    background: #329996;
+}
+
+.feedback-bad::after {
+    content: '\2639';
+    background: #D15C57;
+}
+
+
+
+/* FOOTER *
+ *        */
+
+footer {
+    height: 1em;
+    padding: 0.8em 0;
+    text-align: center;
+    background: #236b69;
+    color: #fff;
+}
+
+footer a {
+    color: #fff;
+    opacity: 0.8;
+}
+
+footer a:hover {
+    color: #fff;
+    opacity: 1;
+}
+
+footer ul {
+    list-style: none;
+}
+
+ footer ul li {
+    display: inline;
+    padding: 0 5px;
+ }

@@ -23,13 +23,13 @@ var WordsCloud = React.createClass({
 
       var onWordClick = this.onWordClick.bind(this, word);
 
-      return <div key={i}
-        className={'button font--' + font + ' case--' + lettercase}
-        onClick={onWordClick}>{word}</div>;
+      return <button key={i}
+        className={'answer font--' + font + ' case--' + lettercase}
+        onClick={onWordClick}>{word}</button>;
     };
 
     return <div className="guess">
-      <div className="words">
+      <div className="answers">
         {this.props.words.map(wordButton.bind(this))}
       </div>
     </div>;
@@ -39,6 +39,7 @@ var WordsCloud = React.createClass({
 
 var GameControls = React.createClass({
   getInitialState: function() {
+    this.props.opened = false;
     // Already configured ?
     var config = localStorage.getItem('config');
 
@@ -64,6 +65,10 @@ var GameControls = React.createClass({
     this.props.onConfigure(this.state.config);
   },
 
+  toggleMenu: function() {
+    this.setState({toggle: this.props.opened = !this.props.opened });
+  },
+
   onChange: function (event) {
     if (event.target.value) {
       this.state.config[event.target.name] = event.target.value;
@@ -80,27 +85,40 @@ var GameControls = React.createClass({
   },
 
   render: function() {
+    if(this.props.opened === true) {
+      var class_openend = ' opened',
+      class_active = ' active';
+    }else {
+      var class_openend = class_active = '';
+    }
     var comboBox = function (property, options) {
       return <div className={'control control--' + property}>
-        <select name={property}
-                value={this.state.config[property]}
-                onChange={this.onChange}>
-          <option value="">{i18n.tr(property)}...</option>
-          {options.map(function (option) {
-            return <option key={option} value={option}>{i18n.tr(option)}</option>
-          })}
-        </select>
+        <div className='select-style'>
+          <select name={property}
+                  value={this.state.config[property]}
+                  onChange={this.onChange}>
+            <option value="">{i18n.tr(property)}...</option>
+            {options.map(function (option) {
+              return <option key={option} value={option}>{i18n.tr(option)}</option>
+            })}
+          </select>
+        </div>
       </div>
     }
 
-    return <div className="controls">
-      {comboBox.call(this, 'lang', this.props.langs)}
-      {comboBox.call(this, 'difficulty', this.props.difficulties)}
-      {comboBox.call(this, 'category', this.props.categories)}
-      {comboBox.call(this, 'font', this.props.fonts)}
-      {comboBox.call(this, 'lettercase', this.props.lettercases)}
-      {comboBox.call(this, 'choices', this.props.choices)}
-  </div>;
+    return <div>
+              <button className={'settings_toggle' + class_active} onClick={this.toggleMenu}>
+                <i className='fa fa-cog'></i>
+              </button>
+              <div className={'settings' + class_openend}>
+                {comboBox.call(this, 'lang', this.props.langs)}
+                {comboBox.call(this, 'difficulty', this.props.difficulties)}
+                {comboBox.call(this, 'category', this.props.categories)}
+                {comboBox.call(this, 'font', this.props.fonts)}
+                {comboBox.call(this, 'lettercase', this.props.lettercases)}
+                {comboBox.call(this, 'choices', this.props.choices)}
+              </div>
+            </div>;
   }
 });
 
@@ -108,8 +126,8 @@ var GameControls = React.createClass({
 var Scores = React.createClass({
   render: function () {
     return <div className="score">
-      <span className="good">{this.props.score}</span>
-      <span className="bad">{this.props.total - this.props.score}</span>
+      <span className="good">{this.props.score} <i className="fa fa-smile-o"></i></span>
+      <span className="bad">{this.props.total - this.props.score} <i className="fa fa-frown-o"></i></span>
     </div>
   }
 });
@@ -199,13 +217,23 @@ var GameApp = React.createClass({
     var lettercase = config.lettercase ? [config.lettercase] : lettercases;
 
     return <div className={'main feedback feedback-' + this.state.feedback}>
-      <header>
+      <div className="game_controls">
         <Scores score={this.state.score}
                 total={this.state.total} />
-      </header>
 
-      <section className="content">
-        <VideoPlayer video={this.state.feedback ? {} : level.video} />
+        <GameControls onConfigure={this.onConfigure}
+                      langs={this.facetList('lang', true)}
+                      difficulties={this.facetList('difficulty')}
+                      categories={this.facetList('category')}
+                      fonts={fonts}
+                      lettercases={lettercases}
+                      choices={_.range(2, 8)} />
+      </div>
+
+      <section className="game_board">
+        <div className="sign">
+          <VideoPlayer video={this.state.feedback ? {} : level.video} />
+        </div>
         <WordsCloud font={font}
                     lettercase={lettercase}
                     level={level}
@@ -213,13 +241,6 @@ var GameApp = React.createClass({
                     onPlay={this.onPlay} />
       </section>
 
-      <GameControls onConfigure={this.onConfigure}
-                    langs={this.facetList('lang', true)}
-                    difficulties={this.facetList('difficulty')}
-                    categories={this.facetList('category')}
-                    fonts={fonts}
-                    lettercases={lettercases}
-                    choices={_.range(2, 8)} />
     </div>;
   }
 });
