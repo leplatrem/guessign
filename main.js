@@ -18,8 +18,8 @@ var WordsCloud = React.createClass({
 
   render: function() {
     var wordButton = function(word, i) {
-      var font = _.sample(this.props.font);
-      var lettercase = _.sample(this.props.lettercase);
+      var font = this.props.font;
+      var lettercase = this.props.lettercase;
 
       var onWordClick = this.onWordClick.bind(this, word);
 
@@ -133,6 +133,9 @@ var GameApp = React.createClass({
     var newstate = _.extend(this.getInitialState(), {
       config: config,
       levels: _.shuffle(matching),
+      choices: config.choices || 5,
+      font: config.font || _.sample(this.props.fonts),
+      lettercase: config.lettercase || _.sample(this.props.lettercases),
     });
     this.setState(newstate);
   },
@@ -152,16 +155,16 @@ var GameApp = React.createClass({
   getSampleWords: function () {
     var level = this.getLevel();
     var words = level.words;
-    var total = this.state.config.choices || 5;
+    var choices = this.state.choices;
 
-    if (total > words.length) {
+    if (choices > words.length) {
       var others = _.uniq(_.flatten(_.pluck(this.state.levels, 'words')));
-      var extra = _.sample(_.without(others, words), total - words.length);
+      var extra = _.sample(_.without(others, words), choices - words.length);
       words = words.concat(extra);
     }
 
     words.unshift(level.word);
-    return _.shuffle(words.slice(0, total));
+    return _.shuffle(words.slice(0, choices));
   },
 
   onPlay: function (success) {
@@ -181,22 +184,22 @@ var GameApp = React.createClass({
   },
 
   nextLevel: function () {
+    var config = this.state.config;
+    var font = config.font || _.sample(this.props.fonts);
+    var lettercase = config.lettercase || _.sample(this.props.lettercases);
+
     this.setState({
       feedback: '',
       score: this.state.score + 1,
-      current: (this.state.current + 1) % this.state.levels.length
+      current: (this.state.current + 1) % this.state.levels.length,
+      font: font,
+      lettercase: lettercase,
     });
   },
 
   render: function() {
     var level = this.getLevel();
     var words = this.getSampleWords();
-
-    var config = this.state.config;
-    var fonts = ['hand', 'machine', 'gothic', 'script', 'sans', 'serif'];
-    var font = config.font ? [config.font] : fonts;
-    var lettercases = ['lower', 'first', 'upper'];
-    var lettercase = config.lettercase ? [config.lettercase] : lettercases;
 
     return <div className={'main feedback feedback-' + this.state.feedback}>
       <header>
@@ -206,8 +209,8 @@ var GameApp = React.createClass({
 
       <section className="content">
         <VideoPlayer video={this.state.feedback ? {} : level.video} />
-        <WordsCloud font={font}
-                    lettercase={lettercase}
+        <WordsCloud font={this.state.font}
+                    lettercase={this.state.lettercase}
                     level={level}
                     words={words}
                     onPlay={this.onPlay} />
@@ -217,12 +220,16 @@ var GameApp = React.createClass({
                     langs={this.facetList('lang', true)}
                     difficulties={this.facetList('difficulty')}
                     categories={this.facetList('category')}
-                    fonts={fonts}
-                    lettercases={lettercases}
-                    choices={_.range(2, 8)} />
+                    fonts={this.props.fonts}
+                    lettercases={this.props.lettercases}
+                    choices={this.props.choices} />
     </div>;
   }
 });
 
 
-React.renderComponent(<GameApp database={levels} />, document.getElementById('container'));
+var game = <GameApp database={levels}
+                    fonts={['hand', 'machine', 'gothic', 'script', 'sans', 'serif']}
+                    lettercases={['lower', 'first', 'upper']}
+                    choices={_.range(2, 8)} />
+React.renderComponent(game, document.getElementById('container'));
