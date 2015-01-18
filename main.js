@@ -127,6 +127,10 @@ var GameApp = React.createClass({
     };
   },
 
+  componentDidMount: function () {
+    this.animate();
+  },
+
   onConfigure: function (config) {
     var filters = _.omit(config, 'font', 'lettercase', 'choices');
     var matching = _.where(this.props.database, filters);
@@ -173,14 +177,15 @@ var GameApp = React.createClass({
       feedback: success ? 'good' : 'bad'
     });
 
-    setTimeout(function () {
-      if (success) {
-        this.nextLevel();
-      }
-      else {
+    var component = this.getDOMNode();
+    Velocity(component,'transition.slideDownIn')
+      .then(function() {
         this.setState({feedback: ''});
-      }
-    }.bind(this), 500);
+
+        if (success) {
+          this.nextLevel();
+        }
+      }.bind(this));
   },
 
   nextLevel: function () {
@@ -189,12 +194,21 @@ var GameApp = React.createClass({
     var lettercase = config.lettercase || _.sample(this.props.lettercases);
 
     this.setState({
-      feedback: '',
       score: this.state.score + 1,
       current: (this.state.current + 1) % this.state.levels.length,
       font: font,
       lettercase: lettercase,
     });
+
+    this.animate();
+  },
+
+  animate: function () {
+    var component = this.getDOMNode();
+    var player = component.querySelectorAll('.player');
+    var words = component.querySelectorAll('.words');
+    Velocity(player,'transition.bounceLeftIn');
+    Velocity(words,'transition.bounceRightIn');
   },
 
   render: function() {
