@@ -33,7 +33,7 @@ var WordsCloud = React.createClass({
 
     return <div className="guess">
       <div className="words">
-        {this.props.words.map(wordButton.bind(this))}
+        {this.props.level.words.map(wordButton.bind(this))}
       </div>
     </div>;
   }
@@ -122,14 +122,29 @@ var GameApp = React.createClass({
   getInitialState: function() {
     return {
       config: {},
+      choices: DEFAULT_CHOICES,
+      level: {words: []},
+      font: null,
+      lettercase: null,
       score: 0,
       total: 0,
-      feedback: ''
+      feedback: 'loading'
     };
   },
 
   componentDidMount: function () {
     this.animate();
+
+    console.log('Fetch data from server...');
+    this.props.store.sync(function () {
+      // Once loaded, pick a first level.
+      this.props.store.pickNext(this.state.choices, function (level) {
+        this.setState({
+          feedback: '',
+          level: level,
+        })
+      }.bind(this));
+    }.bind(this));
   },
 
   /**
@@ -146,11 +161,16 @@ var GameApp = React.createClass({
     // Update game with new config.
     var newstate = _.extend(this.getInitialState(), {
       config: config,
-      choices: config.choices || DEFAULT_CHOICES,
+      choices: config.choices || this.state.choices,
       font: config.font || _.sample(this.props.fonts),
       lettercase: config.lettercase || _.sample(this.props.lettercases),
     });
-    this.setState(newstate);
+
+    // Restart game with new score and level.
+    this.props.store.pickNext(newstate.choices, function (level) {
+      newstate.level = level;
+      this.setState(newstate);
+    }.bind(this));
   },
 
   /**
@@ -178,20 +198,21 @@ var GameApp = React.createClass({
   },
 
   jumpNextLevel: function () {
-    // Jump to next level.
-    this.props.store.pickNext();
-
     // Use random font or lettercase if not set.
     var config = this.state.config;
     var font = config.font || _.sample(this.props.fonts);
     var lettercase = config.lettercase || _.sample(this.props.lettercases);
 
-    // Increase number of success.
-    this.setState({
-      score: this.state.score + 1,
-      font: font,
-      lettercase: lettercase,
-    });
+    // Jump to next level.
+    this.props.store.pickNext(this.state.choices, function (level) {
+      // Increase number of success.
+      this.setState({
+        level: level,
+        score: this.state.score + 1,
+        font: font,
+        lettercase: lettercase,
+      });
+    }.bind(this));
 
     this.animate();
   },
@@ -205,9 +226,8 @@ var GameApp = React.createClass({
   },
 
   render: function() {
+    var level = this.state.level;
     var store = this.props.store;
-    var level = store.getCurrent();
-    var words = store.getSampleWords(this.state.choices);
 
     return <div className={'main feedback feedback-' + this.state.feedback}>
       <header>
@@ -220,7 +240,6 @@ var GameApp = React.createClass({
         <WordsCloud font={this.state.font}
                     lettercase={this.state.lettercase}
                     level={level}
-                    words={words}
                     onPlay={this.onPlay} />
       </section>
 

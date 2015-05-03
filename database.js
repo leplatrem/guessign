@@ -104,11 +104,32 @@ var levels = [
 function Store() {
   this._levels = levels;
   this._filtered = levels;
-  this._current = null;
   this._index = -1;
+
+  this._db = new PouchDB('guessign');
 };
 
 Store.prototype = {
+  /**
+   * Fetch from remote database.
+   */
+  sync: function (done) {
+    var remote = new PouchDB('http://leplatrem.iriscouch.com:5984/guessign');
+
+    remote.info()
+      .then(function (info) {
+        console.log(info);
+      });
+
+    this._db.replicate.from(remote)
+      .on('complete', function () {
+        done();
+      })
+      .on('error', function (err) {
+        throw err;
+      });
+  },
+
   setFilters: function (filters) {
      var matching = _.where(this._levels, filters);
      this._filtered = _.shuffle(matching);
@@ -127,32 +148,25 @@ Store.prototype = {
     return _.uniq(facets.sort(), true);
   },
 
-  getCurrent: function () {
-    if (!this._current) {
-      this.pickNext();
-    }
-    return this._current;
-  },
-
-  pickNext: function () {
+  pickNext: function (choices, done) {
     this._index = (this._index + 1) % this._filtered.length;
-    this._current = this._filtered[this._index];
-  },
+    var current = JSON.parse(JSON.stringify(this._filtered[this._index]));
 
-  getSampleWords: function (size) {
-    var words = this._current.words || [];
+    var words = current.words || [];
 
     // If not enough proposed words, pick random to reach number of choices.
-    if (size > words.length) {
+    if (choices > words.length) {
       var others = _.uniq(_.flatten(_.pluck(this._filtered, 'words')));
-      var extra = _.sample(_.without(others, words), size - words.length);
+      var extra = _.sample(_.without(others, words), choices - words.length);
       words = words.concat(extra);
     }
 
     // Remove solution from choices.
-    words.unshift(this._current.word);
+    words.unshift(current.word);
 
     // Shuffle propositions.
-    return _.shuffle(words.slice(0, size));
+    current.words = _.shuffle(words.slice(0, choices));
+
+    done(current);
   },
 };
