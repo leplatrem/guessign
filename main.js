@@ -1,5 +1,8 @@
 /** @jsx React.DOM */
 
+var DEFAULT_CHOICES = 5;
+
+
 var VideoPlayer = React.createClass({
   render: function() {
     return <div className="player">
@@ -119,8 +122,6 @@ var GameApp = React.createClass({
   getInitialState: function() {
     return {
       config: {},
-      levels: this.props.database,
-      current: 0,
       score: 0,
       total: 0,
       feedback: ''
@@ -131,46 +132,34 @@ var GameApp = React.createClass({
     this.animate();
   },
 
+  /**
+   * When settings are changed.
+   * Called from ``GamesControl`` component.
+   *
+   * @param {Object} config - full configuration object.
+   */
   onConfigure: function (config) {
+    // Filter levels from current config.
     var filters = _.omit(config, 'font', 'lettercase', 'choices');
-    var matching = _.where(this.props.database, filters);
+    this.props.store.setFilters(filters);
+
+    // Update game with new config.
     var newstate = _.extend(this.getInitialState(), {
       config: config,
-      levels: _.shuffle(matching),
-      choices: config.choices || 5,
+      choices: config.choices || DEFAULT_CHOICES,
       font: config.font || _.sample(this.props.fonts),
       lettercase: config.lettercase || _.sample(this.props.lettercases),
     });
     this.setState(newstate);
   },
 
-  facetList: function (property, complete) {
-    // Return all distinct values of ``property`` within currently filtered levels
-    // If ``complete`` is true, lookup property on all available levels.
-    var list = complete ? this.props.database : this.state.levels;
-    var facets = _.pluck(list, property);
-    return _.uniq(facets.sort(), true);
-  },
-
-  getLevel: function () {
-    return this.state.levels[this.state.current];
-  },
-
-  getSampleWords: function () {
-    var level = this.getLevel();
-    var words = level.words;
-    var choices = this.state.choices;
-
-    if (choices > words.length) {
-      var others = _.uniq(_.flatten(_.pluck(this.state.levels, 'words')));
-      var extra = _.sample(_.without(others, words), choices - words.length);
-      words = words.concat(extra);
-    }
-
-    words.unshift(level.word);
-    return _.shuffle(words.slice(0, choices));
-  },
-
+  /**
+   * When player picks a word.
+   * Called from ``WordsCloud`` component.
+   * Increase number of guesses, and if success, animate to next level.
+   *
+   * @param {bool} success - true if guessed correctly.
+   */
   onPlay: function (success) {
     this.setState({
       total: this.state.total + 1,
@@ -183,19 +172,23 @@ var GameApp = React.createClass({
         this.setState({feedback: ''});
 
         if (success) {
-          this.nextLevel();
+          this.jumpNextLevel();
         }
       }.bind(this));
   },
 
-  nextLevel: function () {
+  jumpNextLevel: function () {
+    // Jump to next level.
+    this.props.store.pickNext();
+
+    // Use random font or lettercase if not set.
     var config = this.state.config;
     var font = config.font || _.sample(this.props.fonts);
     var lettercase = config.lettercase || _.sample(this.props.lettercases);
 
+    // Increase number of success.
     this.setState({
       score: this.state.score + 1,
-      current: (this.state.current + 1) % this.state.levels.length,
       font: font,
       lettercase: lettercase,
     });
@@ -212,8 +205,9 @@ var GameApp = React.createClass({
   },
 
   render: function() {
-    var level = this.getLevel();
-    var words = this.getSampleWords();
+    var store = this.props.store;
+    var level = store.getCurrent();
+    var words = store.getSampleWords(this.state.choices);
 
     return <div className={'main feedback feedback-' + this.state.feedback}>
       <header>
@@ -231,9 +225,9 @@ var GameApp = React.createClass({
       </section>
 
       <GameControls onConfigure={this.onConfigure}
-                    langs={this.facetList('lang', true)}
-                    difficulties={this.facetList('difficulty')}
-                    categories={this.facetList('category')}
+                    langs={store.facetList('lang', true)}
+                    difficulties={store.facetList('difficulty')}
+                    categories={store.facetList('category')}
                     fonts={this.props.fonts}
                     lettercases={this.props.lettercases}
                     choices={this.props.choices} />
@@ -242,7 +236,7 @@ var GameApp = React.createClass({
 });
 
 
-var game = <GameApp database={levels}
+var game = <GameApp store={new Store()}
                     fonts={['hand', 'machine', 'gothic', 'script', 'sans', 'serif']}
                     lettercases={['lower', 'first', 'upper']}
                     choices={_.range(2, 8)} />
