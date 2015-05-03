@@ -1,11 +1,19 @@
 /** @jsx React.DOM */
 
+var DEFAULT_CHOICES = 5;
+
+
 var VideoPlayer = React.createClass({
   render: function() {
-    return <div className="player">
-      <video src={this.props.video.url} autoPlay controls></video>
-      <div className="attributions">&copy; {this.props.video.attributions}</div>
-    </div>;
+    if (!this.props.video.url) {
+      return <div className="player"></div>;
+    }
+    return (
+      <div className="player">
+        <video src={this.props.video.url} autoPlay controls></video>
+        <div className="attributions">&copy; {this.props.video.attributions}</div>
+      </div>
+    );
   }
 });
 
@@ -30,7 +38,7 @@ var WordsCloud = React.createClass({
 
     return <div className="guess">
       <div className="words">
-        {this.props.words.map(wordButton.bind(this))}
+        {(this.props.level.words || []).map(wordButton.bind(this))}
       </div>
     </div>;
   }
@@ -86,8 +94,8 @@ var GameControls = React.createClass({
                 value={this.state.config[property]}
                 onChange={this.onChange}>
           <option value="">{i18n.tr(property)}...</option>
-          {options.map(function (option) {
-            return <option key={option} value={option}>{i18n.tr(option)}</option>
+          {options.map(function (option, index) {
+            return <option key={index} value={option}>{i18n.tr(option)}</option>
           })}
         </select>
       </div>
@@ -97,6 +105,7 @@ var GameControls = React.createClass({
       {comboBox.call(this, 'lang', this.props.langs)}
       {comboBox.call(this, 'difficulty', this.props.difficulties)}
       {comboBox.call(this, 'category', this.props.categories)}
+      {comboBox.call(this, 'class', this.props.classes)}
       {comboBox.call(this, 'font', this.props.fonts)}
       {comboBox.call(this, 'lettercase', this.props.lettercases)}
       {comboBox.call(this, 'choices', this.props.choices)}
@@ -118,89 +127,106 @@ var Scores = React.createClass({
 var GameApp = React.createClass({
   getInitialState: function() {
     return {
-      config: {},
-      levels: this.props.database,
-      current: 0,
+      // Player.
+      feedback: 'loading',
+      level: null,
       score: 0,
       total: 0,
-      feedback: ''
+      // Filters.
+      difficulties: [],
+      categories: [],
+      classes: [],
+      // Apparence.
+      font: null,
+      lettercase: null,
+      choices: DEFAULT_CHOICES,
     };
+  },
+
+  componentWillMount: function () {
+    // Bind store events.
+    this.props.store.on('loaded', this.onLoaded.bind(this));
+    this.props.store.on('next', this.onNext.bind(this));
   },
 
   componentDidMount: function () {
     this.animate();
   },
 
+  /**
+   * When settings are changed.
+   * Called from ``GamesControl`` component.
+   *
+   * @param {Object} config - full configuration object.
+   */
   onConfigure: function (config) {
+    // Update game with new config (reset).
+    console.log('Configuration is now', config);
+    this.setState(_.extend(this.getInitialState(), {
+      font: config.font,
+      lettercase: config.lettercase,
+      choices: config.choices || this.state.choices,
+    }));
+
+    // Filter with chosen config
     var filters = _.omit(config, 'font', 'lettercase', 'choices');
-    var matching = _.where(this.props.database, filters);
-    var newstate = _.extend(this.getInitialState(), {
-      config: config,
-      levels: _.shuffle(matching),
-      choices: config.choices || 5,
-      font: config.font || _.sample(this.props.fonts),
-      lettercase: config.lettercase || _.sample(this.props.lettercases),
+    this.props.store.load(filters)
+  },
+
+  onLoaded: function (facets) {
+    console.log('Data was loaded', facets);
+    this.setState({
+      difficulties: facets.difficulties,
+      categories: facets.categories,
+      classes: facets.classes,
+      score: -1,
     });
-    this.setState(newstate);
+    // (re)Start game with new score and level.
+    return this.props.store.next(this.state.choices);
   },
 
-  facetList: function (property, complete) {
-    // Return all distinct values of ``property`` within currently filtered levels
-    // If ``complete`` is true, lookup property on all available levels.
-    var list = complete ? this.props.database : this.state.levels;
-    var facets = _.pluck(list, property);
-    return _.uniq(facets.sort(), true);
+  onNext: function (level) {
+    // Use random font or lettercase if not set.
+    var font = this.state.font || _.sample(this.props.fonts);
+    var lettercase = this.state.lettercase || _.sample(this.props.lettercases);
+
+    // Increase number of success.
+    this.setState({
+      feedback: '',
+      level: level,
+      score: this.state.score + 1,
+
+      font: font,
+      lettercase: lettercase,
+    });
   },
 
-  getLevel: function () {
-    return this.state.levels[this.state.current];
-  },
-
-  getSampleWords: function () {
-    var level = this.getLevel();
-    var words = level.words;
-    var choices = this.state.choices;
-
-    if (choices > words.length) {
-      var others = _.uniq(_.flatten(_.pluck(this.state.levels, 'words')));
-      var extra = _.sample(_.without(others, words), choices - words.length);
-      words = words.concat(extra);
-    }
-
-    words.unshift(level.word);
-    return _.shuffle(words.slice(0, choices));
-  },
-
+  /**
+   * When player picks a word.
+   * Called from ``WordsCloud`` component.
+   * Increase number of guesses, and if success, animate to next level.
+   *
+   * @param {bool} success - true if guessed correctly.
+   */
   onPlay: function (success) {
+    // Show success/failure screen.
     this.setState({
       total: this.state.total + 1,
       feedback: success ? 'good' : 'bad'
     });
 
+    // Animation to next level.
     var component = this.getDOMNode();
     Velocity(component,'transition.slideDownIn')
       .then(function() {
         this.setState({feedback: ''});
 
         if (success) {
-          this.nextLevel();
+          // Jump to next level.
+          this.props.store.next(this.state.choices);
+          this.animate();
         }
       }.bind(this));
-  },
-
-  nextLevel: function () {
-    var config = this.state.config;
-    var font = config.font || _.sample(this.props.fonts);
-    var lettercase = config.lettercase || _.sample(this.props.lettercases);
-
-    this.setState({
-      score: this.state.score + 1,
-      current: (this.state.current + 1) % this.state.levels.length,
-      font: font,
-      lettercase: lettercase,
-    });
-
-    this.animate();
   },
 
   animate: function () {
@@ -212,37 +238,39 @@ var GameApp = React.createClass({
   },
 
   render: function() {
-    var level = this.getLevel();
-    var words = this.getSampleWords();
+    return (
+      <div className={'main feedback feedback-' + this.state.feedback}>
+        <header>
+          <Scores score={this.state.score}
+                  total={this.state.total} />
+        </header>
 
-    return <div className={'main feedback feedback-' + this.state.feedback}>
-      <header>
-        <Scores score={this.state.score}
-                total={this.state.total} />
-      </header>
+        <section className="content">
+          <VideoPlayer video={this.state.feedback ? {} : this.state.level.video} />
+          <WordsCloud font={this.state.font}
+                      lettercase={this.state.lettercase}
+                      level={this.state.level || {}}
+                      onPlay={this.onPlay} />
+        </section>
 
-      <section className="content">
-        <VideoPlayer video={this.state.feedback ? {} : level.video} />
-        <WordsCloud font={this.state.font}
-                    lettercase={this.state.lettercase}
-                    level={level}
-                    words={words}
-                    onPlay={this.onPlay} />
-      </section>
+        <GameControls onConfigure={this.onConfigure}
 
-      <GameControls onConfigure={this.onConfigure}
-                    langs={this.facetList('lang', true)}
-                    difficulties={this.facetList('difficulty')}
-                    categories={this.facetList('category')}
-                    fonts={this.props.fonts}
-                    lettercases={this.props.lettercases}
-                    choices={this.props.choices} />
-    </div>;
+                      langs={this.props.langs}
+                      difficulties={this.state.difficulties}
+                      categories={this.state.categories}
+                      classes={this.state.classes}
+
+                      fonts={this.props.fonts}
+                      lettercases={this.props.lettercases}
+                      choices={this.props.choices} />
+      </div>
+    );
   }
 });
 
 
-var game = <GameApp database={levels}
+var game = <GameApp store={new Store()}
+                    langs={['fr', 'en', 'es']}
                     fonts={['hand', 'machine', 'gothic', 'script', 'sans', 'serif']}
                     lettercases={['lower', 'first', 'upper']}
                     choices={_.range(2, 8)} />

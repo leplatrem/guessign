@@ -20,9 +20,13 @@ i18n.tr = function (str) {
 
 
 i18n.strings['fr-FR'] = i18n.strings['fr'] = {
+  'fr': 'Français',
+  'en': 'Anglais',
+  'es': 'Espagnol',
   'lang': 'Langue',
   'difficulty': 'Difficulté',
   'category': 'Catégorie',
+  'class': 'Classe',
   'font': 'Police',
   'lettercase': 'Casse',
   'choices': 'Choix',

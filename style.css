@@ -91,7 +91,7 @@ header::before {
     text-align: center;
 }
 
-.feedback-good::after, .feedback-bad::after {
+.feedback-good::after, .feedback-bad::after, .feedback-loading::after {
     height: 100%;
 }
 
@@ -101,6 +101,11 @@ header::before {
 
 .feedback-bad::after {
     content: '\2639';
+}
+
+.feedback-loading::after {
+    font-size: 3em;
+    content: 'Loading... \231b';
 }
 
 .score .good::after {
