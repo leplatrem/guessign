@@ -104,7 +104,8 @@ header::before {
 }
 
 .feedback-loading::after {
-    content: '...';
+    font-size: 3em;
+    content: 'Loading... \231b';
 }
 
 .score .good::after {
