@@ -122,6 +122,9 @@ var GameApp = React.createClass({
   getInitialState: function() {
     return {
       config: {},
+      langs: [],
+      difficulties: [],
+      categories: [],
       choices: DEFAULT_CHOICES,
       level: {words: []},
       font: null,
@@ -134,17 +137,6 @@ var GameApp = React.createClass({
 
   componentDidMount: function () {
     this.animate();
-
-    console.log('Fetch data from server...');
-    this.props.store.sync(function () {
-      // Once loaded, pick a first level.
-      this.props.store.pickNext(this.state.choices, function (level) {
-        this.setState({
-          feedback: '',
-          level: level,
-        })
-      }.bind(this));
-    }.bind(this));
   },
 
   /**
@@ -154,23 +146,38 @@ var GameApp = React.createClass({
    * @param {Object} config - full configuration object.
    */
   onConfigure: function (config) {
-    // Filter levels from current config.
-    var filters = _.omit(config, 'font', 'lettercase', 'choices');
-    this.props.store.setFilters(filters);
-
     // Update game with new config.
     var newstate = _.extend(this.getInitialState(), {
       config: config,
+      feedback: '',
       choices: config.choices || this.state.choices,
       font: config.font || _.sample(this.props.fonts),
       lettercase: config.lettercase || _.sample(this.props.lettercases),
     });
 
-    // Restart game with new score and level.
-    this.props.store.pickNext(newstate.choices, function (level) {
-      newstate.level = level;
-      this.setState(newstate);
-    }.bind(this));
+    var self = this;
+    var store = this.props.store;
+
+    store.load(function () {
+      // List of langs is now available.
+      newstate.langs = store.allLangs();
+
+      // Filter with chosen config;
+      var filters = _.omit(config, 'font', 'lettercase', 'choices');
+      store.filter(filters, function () {
+
+        // Update list of langs/difficulties/categories..
+        newstate.difficulties = store.allDifficulties();
+        newstate.categories = store.allCategories();
+
+        // (re)Start game with new score and level.
+        store.next(newstate.choices, function (level) {
+          newstate.feedback = '';
+          newstate.level = level;
+          self.setState(newstate);
+        });
+      });
+    });
   },
 
   /**
@@ -181,11 +188,13 @@ var GameApp = React.createClass({
    * @param {bool} success - true if guessed correctly.
    */
   onPlay: function (success) {
+    // Show success/failure screen.
     this.setState({
       total: this.state.total + 1,
       feedback: success ? 'good' : 'bad'
     });
 
+    // Animation to next level.
     var component = this.getDOMNode();
     Velocity(component,'transition.slideDownIn')
       .then(function() {
@@ -204,7 +213,7 @@ var GameApp = React.createClass({
     var lettercase = config.lettercase || _.sample(this.props.lettercases);
 
     // Jump to next level.
-    this.props.store.pickNext(this.state.choices, function (level) {
+    this.props.store.next(this.state.choices, function (level) {
       // Increase number of success.
       this.setState({
         level: level,
@@ -227,7 +236,6 @@ var GameApp = React.createClass({
 
   render: function() {
     var level = this.state.level;
-    var store = this.props.store;
 
     return <div className={'main feedback feedback-' + this.state.feedback}>
       <header>
@@ -244,9 +252,9 @@ var GameApp = React.createClass({
       </section>
 
       <GameControls onConfigure={this.onConfigure}
-                    langs={store.facetList('lang', true)}
-                    difficulties={store.facetList('difficulty')}
-                    categories={store.facetList('category')}
+                    langs={this.state.langs}
+                    difficulties={this.state.difficulties}
+                    categories={this.state.categories}
                     fonts={this.props.fonts}
                     lettercases={this.props.lettercases}
                     choices={this.props.choices} />
