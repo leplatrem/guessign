@@ -100,6 +100,7 @@ var GameControls = React.createClass({
       {comboBox.call(this, 'lang', this.props.langs)}
       {comboBox.call(this, 'difficulty', this.props.difficulties)}
       {comboBox.call(this, 'category', this.props.categories)}
+      {comboBox.call(this, 'class', this.props.classes)}
       {comboBox.call(this, 'font', this.props.fonts)}
       {comboBox.call(this, 'lettercase', this.props.lettercases)}
       {comboBox.call(this, 'choices', this.props.choices)}
@@ -125,6 +126,7 @@ var GameApp = React.createClass({
       langs: [],
       difficulties: [],
       categories: [],
+      classes: [],
       choices: DEFAULT_CHOICES,
       level: {words: []},
       font: null,
@@ -166,9 +168,10 @@ var GameApp = React.createClass({
       var filters = _.omit(config, 'font', 'lettercase', 'choices');
       store.filter(filters, function () {
 
-        // Update list of langs/difficulties/categories..
+        // Update list of langs/difficulties/categories/classes.
         newstate.difficulties = store.allDifficulties();
         newstate.categories = store.allCategories();
+        newstate.classes = store.allClasses();
 
         // (re)Start game with new score and level.
         store.next(newstate.choices, function (level) {
@@ -255,6 +258,7 @@ var GameApp = React.createClass({
                     langs={this.state.langs}
                     difficulties={this.state.difficulties}
                     categories={this.state.categories}
+                    classes={this.state.classes}
                     fonts={this.props.fonts}
                     lettercases={this.props.lettercases}
                     choices={this.props.choices} />

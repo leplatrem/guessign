@@ -7,6 +7,7 @@ function Store() {
 
   this._all_langs = [];
   this._all_categories = [];
+  this._all_classes = [];
   this._all_difficulties = [];
   this._all_words = [];
 
@@ -21,6 +22,10 @@ Store.prototype = {
 
   allCategories: function () {
     return this._all_categories;
+  },
+
+  allClasses: function () {
+    return this._all_classes;
   },
 
   allDifficulties: function () {
@@ -63,6 +68,14 @@ Store.prototype = {
       });
     })
     .then(function () {
+      return self._db.createIndex({
+        name: '_by_class',
+        index: {
+          fields: ['class']
+        }
+      });
+    })
+    .then(function () {
       return remote.info();
     })
     .then(function (info) {
@@ -98,6 +111,7 @@ Store.prototype = {
       // Extract some attributes from filtered levels.
       this._all_difficulties = this._distinct(result.docs, 'difficulty');
       this._all_categories = this._distinct(result.docs, 'category');
+      this._all_classes = this._distinct(result.docs, 'class');
       this._all_words = _.uniq(_.pluck(result.docs, 'word'));
 
       // Store list of filtered records.
