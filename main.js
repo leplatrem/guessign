@@ -32,15 +32,17 @@ var WordsCloud = React.createClass({
       var onWordClick = this.onWordClick.bind(this, word);
 
       return <div key={i}
-        className={'button font--' + font + ' case--' + lettercase}
+        className={'word font--' + font + ' case--' + lettercase}
         onClick={onWordClick}>{word}</div>;
     };
 
-    return <div className="guess">
-      <div className="words">
-        {(this.props.level.words || []).map(wordButton.bind(this))}
+    return (
+      <div className="guess">
+        <div className="words">
+          {(this.props.level.words || []).map(wordButton.bind(this))}
+        </div>
       </div>
-    </div>;
+    );
   }
 });
 
@@ -73,11 +75,21 @@ var GameControls = React.createClass({
   },
 
   onChange: function (event) {
-    if (event.target.value) {
-      this.state.config[event.target.name] = event.target.value;
+    if (event.target.name == 'lang') {
+      if (!event.target.value) {
+        // Do nothing. Lang cannot be unset.
+        return;
+      }
+      // Remove every other filters when lang is changed.
+      this.state.config = {lang: event.target.value};
     }
     else {
-      delete this.state.config[event.target.name];
+      if (event.target.value) {
+        this.state.config[event.target.name] = event.target.value;
+      }
+      else {
+        delete this.state.config[event.target.name];
+      }
     }
 
     // Save for next visit
@@ -101,25 +113,29 @@ var GameControls = React.createClass({
       </div>
     }
 
-    return <div className="controls">
-      {comboBox.call(this, 'lang', this.props.langs)}
-      {comboBox.call(this, 'difficulty', this.props.difficulties)}
-      {comboBox.call(this, 'category', this.props.categories)}
-      {comboBox.call(this, 'class', this.props.classes)}
-      {comboBox.call(this, 'font', this.props.fonts)}
-      {comboBox.call(this, 'lettercase', this.props.lettercases)}
-      {comboBox.call(this, 'choices', this.props.choices)}
-  </div>;
+    return (
+      <div className="controls">
+        {comboBox.call(this, 'lang', this.props.langs)}
+        {comboBox.call(this, 'difficulty', this.props.difficulties)}
+        {comboBox.call(this, 'category', this.props.categories)}
+        {comboBox.call(this, 'class', this.props.classes)}
+        {comboBox.call(this, 'font', this.props.fonts)}
+        {comboBox.call(this, 'lettercase', this.props.lettercases)}
+        {comboBox.call(this, 'choices', this.props.choices)}
+      </div>
+    );
   }
 });
 
 
 var Scores = React.createClass({
   render: function () {
-    return <div className="score">
-      <span className="good">{this.props.score}</span>
-      <span className="bad">{this.props.total - this.props.score}</span>
-    </div>
+    return (
+      <div className="score">
+        <span className="good">{this.props.score}</span>
+        <span className="bad">{this.props.total - this.props.score}</span>
+      </div>
+    );
   }
 });
 
@@ -170,7 +186,9 @@ var GameApp = React.createClass({
 
     // Filter with chosen config
     var filters = _.omit(config, 'font', 'lettercase', 'choices');
-    this.props.store.load(filters)
+    if (filters) {
+      this.props.store.load(filters);
+    }
   },
 
   onLoaded: function (facets) {
@@ -217,7 +235,7 @@ var GameApp = React.createClass({
 
     // Animation to next level.
     var component = this.getDOMNode();
-    Velocity(component,'transition.slideDownIn')
+    Velocity(component,'transition.slideDownIn', {display: 'flex'})
       .then(function() {
         this.setState({feedback: ''});
 
@@ -233,8 +251,8 @@ var GameApp = React.createClass({
     var component = this.getDOMNode();
     var player = component.querySelectorAll('.player');
     var words = component.querySelectorAll('.words');
-    Velocity(player,'transition.bounceLeftIn');
-    Velocity(words,'transition.bounceRightIn');
+    Velocity(player, 'transition.bounceLeftIn');
+    Velocity(words, 'transition.bounceRightIn');
   },
 
   render: function() {

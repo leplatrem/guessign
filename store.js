@@ -10,14 +10,14 @@ function Store() {
 
 Store.prototype = {
   load: function (filters) {
-    var changedLang = (filters.lang != this._currentLang);
+    var changedLang = (filters.lang !== this._currentLang);
+    this._currentLang = filters.lang;
+    delete filters.lang;
 
     var obtainData = Promise.resolve(this._all_words);
     // When lang changes, refetch from server.
     if (changedLang) {
-      this._currentLang = filters.lang;
-      // XXX: force store in cache
-      obtainData = fetch('data/' + filters.lang + '.json')
+      obtainData = fetch('data/' + this._currentLang + '.json')
         .then(function (response) {
           return response.json();
         })
@@ -33,7 +33,6 @@ Store.prototype = {
         console.log(words.length, 'words available.');
 
         // Filter current list of words.
-        filters = changedLang ? {} : _.omit(filters, 'lang');
         console.log('Filter on', filters);
         var filtered = _.where(words, filters);
         console.log(filtered.length, 'words found.');
@@ -87,7 +86,7 @@ Store.prototype = {
         // Add solution to choices.
         level.words.unshift(level.word);
         // Shuffle choices.
-        level.words = _.shuffle(level.words);
+        level.words = _.shuffle(_.uniq(level.words));
 
         // Word picked!
         console.log('Picked', level);
