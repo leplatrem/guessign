@@ -45,7 +45,6 @@ var WordsCloud = React.createClass({
   }
 });
 
-
 var GameControls = React.createClass({
   getInitialState: function() {
     // Already configured ?
@@ -294,7 +293,7 @@ var GameApp = React.createClass({
 
 
 var game = <GameApp store={new Store()}
-                    langs={['fr', 'en', 'es']}
+                    langs={['fr', 'de-DE', 'de-AT', 'el', 'en-GB', 'en-US', 'es', 'is', 'it', 'pl', 'pt-BR', 'pt-PT']}
                     fonts={['hand', 'machine', 'gothic', 'script', 'sans', 'serif']}
                     lettercases={['lower', 'first', 'upper']}
                     choices={_.range(2, 8)} />
