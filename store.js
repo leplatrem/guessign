@@ -82,7 +82,7 @@ Store.prototype = {
     prepareWord
       .then(function (level) {
         // Limit to number of choices.
-        level.words = _.sample(level.words, nbchoices);
+        level.words = _.sample(level.words, nbchoices - 1);
         // Add solution to choices.
         level.words.unshift(level.word);
         // Shuffle choices.

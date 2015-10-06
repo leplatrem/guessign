@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 
-var DEFAULT_CHOICES = 5;
+var DEFAULT_CHOICES = 3;
 
 
 var VideoPlayer = React.createClass({
@@ -20,8 +20,7 @@ var VideoPlayer = React.createClass({
 
 var WordsCloud = React.createClass({
   onWordClick: function (word) {
-    var success = word == this.props.level.word;
-    this.props.onPlay(success);
+    this.props.onPlay(word);
   },
 
   render: function() {
@@ -116,9 +115,9 @@ var GameControls = React.createClass({
     return (
       <div className="controls">
         {comboBox.call(this, 'lang', this.props.langs)}
-        {comboBox.call(this, 'difficulty', this.props.difficulties)}
         {comboBox.call(this, 'category', this.props.categories)}
         {comboBox.call(this, 'class', this.props.classes)}
+
         {comboBox.call(this, 'font', this.props.fonts)}
         {comboBox.call(this, 'lettercase', this.props.lettercases)}
         {comboBox.call(this, 'choices', this.props.choices)}
@@ -223,10 +222,11 @@ var GameApp = React.createClass({
    * When player picks a word.
    * Called from ``WordsCloud`` component.
    * Increase number of guesses, and if success, animate to next level.
-   *
-   * @param {bool} success - true if guessed correctly.
    */
-  onPlay: function (success) {
+  onPlay: function (word) {
+    var current = this.state.level;
+    var success = word == current.word;
+
     // Show success/failure screen.
     this.setState({
       total: this.state.total + 1,
@@ -243,6 +243,12 @@ var GameApp = React.createClass({
           // Jump to next level.
           this.props.store.next(this.state.choices);
           this.animate();
+        }
+        else {
+          // Remove played word from choices.
+          var propositions = current.words.filter(function (w) {return w != word });
+          var level = _.extend(current, {words: propositions});
+          this.setState({level: level})
         }
       }.bind(this));
   },
