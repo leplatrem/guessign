@@ -113,6 +113,8 @@ var GameControls = React.createClass({
 
     return (
       <div className="controls">
+        <input id="toggle" type="checkbox"></input>
+        <label htmlFor="toggle">{i18n.tr('Preferences')}</label>
         {comboBox.call(this, 'lang', this.props.langs)}
         {comboBox.call(this, 'category', this.props.categories)}
         {comboBox.call(this, 'class', this.props.classes)}

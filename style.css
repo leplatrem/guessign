@@ -36,7 +36,7 @@ body {
 
 footer {
     text-align: center;
-    font-size: 0.5rem;
+    font-size: 0.4rem;
 }
 
 footer li {
@@ -156,17 +156,34 @@ header::before {
     text-align: center;
 
     border-top: 1px solid white;
-    font-size: 0.5rem;
+    font-size: 0.6rem;
 }
 
-.controls::before {
-    content: '\2699';
+.controls label::before {
+    content: '\2699  ';
 }
 
-.control {
+.controls input {
+    display: none;
+}
+
+.controls input ~ label::after {
+    content: '  \25b8';
+}
+
+.controls input:checked ~ label::after {
+    content: '  \25be';
+}
+
+.controls input ~ .control {
+    display: none;
+}
+
+.controls input:checked ~ .control {
     display: inline-block;
     margin-left: 10px;
 }
+
 
 .font--sans {
     font-family: Lato,"Helvetica Neue",Arial,Helvetica,sans-serif;
