@@ -134,6 +134,7 @@ var Scores = React.createClass({
       <div className="score">
         <span className="good">{this.props.score}</span>
         <span className="bad">{this.props.total - this.props.score}</span>
+        <span className="best">{this.props.best}</span>
       </div>
     );
   }
@@ -147,6 +148,7 @@ var GameApp = React.createClass({
       feedback: 'loading',
       level: null,
       score: 0,
+      best: localStorage.getItem('best') || 0,
       total: 0,
       // Filters.
       difficulties: [],
@@ -196,8 +198,7 @@ var GameApp = React.createClass({
     this.setState({
       difficulties: facets.difficulties,
       categories: facets.categories,
-      classes: facets.classes,
-      score: -1,
+      classes: facets.classes
     });
     // (re)Start game with new score and level.
     return this.props.store.next(this.state.choices);
@@ -208,11 +209,9 @@ var GameApp = React.createClass({
     var font = this.state.font || _.sample(this.props.fonts);
     var lettercase = this.state.lettercase || _.sample(this.props.lettercases);
 
-    // Increase number of success.
     this.setState({
       feedback: '',
       level: level,
-      score: this.state.score + 1,
 
       font: font,
       lettercase: lettercase,
@@ -228,9 +227,23 @@ var GameApp = React.createClass({
     var current = this.state.level;
     var success = word == current.word;
 
-    // Show success/failure screen.
+    var score = this.state.score + (success ? 1 : 0);
+    var total = this.state.total + 1;
+
+    // Best score?
+    var best = this.state.best;
+    var points = 2 * score - total;
+    if (points > best) {
+      best = points;
+      localStorage.setItem('best', best);
+    }
+
+    // Refresh scores.
     this.setState({
-      total: this.state.total + 1,
+      score: score,
+      best: best,
+      total: total,
+      // Show success/failure screen.
       feedback: success ? 'good' : 'bad'
     });
 
@@ -267,7 +280,8 @@ var GameApp = React.createClass({
       <div className={'main feedback feedback-' + this.state.feedback}>
         <header>
           <Scores score={this.state.score}
-                  total={this.state.total} />
+                  total={this.state.total}
+                  best={this.state.best} />
         </header>
 
         <section className="content">
