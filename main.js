@@ -10,7 +10,7 @@ var VideoPlayer = React.createClass({
     }
     return (
       <div className="player">
-        <video src={this.props.video.url} autoPlay controls></video>
+        <video src={this.props.video.url} autoPlay controls muted></video>
         <div className="attributions">&copy; {this.props.video.attributions}</div>
       </div>
     );
