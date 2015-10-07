@@ -1,6 +1,8 @@
 /** @jsx React.DOM */
 
 var DEFAULT_CHOICES = 3;
+var DEFAULT_FONT = 'hand';
+var DEFAULT_LETTERCASE = 'capital';
 
 
 var VideoPlayer = React.createClass({
@@ -44,6 +46,7 @@ var WordsCloud = React.createClass({
     );
   }
 });
+
 
 var GameControls = React.createClass({
   getInitialState: function() {
@@ -155,8 +158,8 @@ var GameApp = React.createClass({
       categories: [],
       classes: [],
       // Apparence.
-      font: null,
-      lettercase: null,
+      font: DEFAULT_FONT,
+      lettercase: DEFAULT_LETTERCASE,
       choices: DEFAULT_CHOICES,
     };
   },
@@ -181,8 +184,8 @@ var GameApp = React.createClass({
     // Update game with new config (reset).
     console.log('Configuration is now', config);
     this.setState(_.extend(this.getInitialState(), {
-      font: config.font,
-      lettercase: config.lettercase,
+      font: config.font || this.state.font,
+      lettercase: config.lettercase || this.state.lettercase,
       choices: config.choices || this.state.choices,
     }));
 
@@ -205,16 +208,9 @@ var GameApp = React.createClass({
   },
 
   onNext: function (level) {
-    // Use random font or lettercase if not set.
-    var font = this.state.font || _.sample(this.props.fonts);
-    var lettercase = this.state.lettercase || _.sample(this.props.lettercases);
-
     this.setState({
       feedback: '',
-      level: level,
-
-      font: font,
-      lettercase: lettercase,
+      level: level
     });
   },
 
